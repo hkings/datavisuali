@@ -1,0 +1,13 @@
+<h1>Google</h1>
+<br>
+<%= form_tag("/searches/index", method: 'get') do %>
+  <%= text_field_tag(:term) %>
+  <%= submit_tag("search") %>
+<% end %>
+
+<ul>
+  <% @docs.each do |doc| %>
+    <li><%= doc.term %> <%= doc.documents.name %> <%= doc.documents.times %></li>
+  <% end %>
+</ul>
+
