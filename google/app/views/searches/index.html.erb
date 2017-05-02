@@ -1,6 +1,6 @@
 <h1>Google</h1>
 <br>
-<%= form_tag("/searches/index", method: 'get') do %>
+<%= form_tag(root_path, method: 'get') do %>
   <%= text_field_tag(:term) %>
   <%= submit_tag("search") %>
 <% end %>
@@ -10,4 +10,3 @@
     <li><%= doc.term %> <%= doc.documents.name %> <%= doc.documents.times %></li>
   <% end %>
 </ul>
-
