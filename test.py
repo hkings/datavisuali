@@ -35,8 +35,8 @@ stop_words_en = ("a","able","about","above","abst","accordance","according","acc
 "wheres","whereupon","wherever","whether","which","while","whim","whither","who","whod","whoever","whole","who'll","whom","whomever","whos","whose","why","widely","willing","wish","with","within","without","wont","words","world","would"
 ,"wouldnt","www","x","y","yes","yet","you","youd","you'll","your","youre","yours","yourself","yourselves","you've","z","zero")
 
-stop_words_es = ("un","una","unas","unos","uno","sobre","todo","también","tras","otro","algún","alguno","alguna","algunos","algunas","ser","es","soy","eres","somos","sois","estoy","esta","estamos","estais","estan",
-"como","en","para","atras","porque","por qué","estado","estaba","ante","antes","siendo","ambos","pero","por","poder","puede","puedo","podemos","podeis","pueden","fui","fue","fuimos","fueron","hacer","hago","hace",
+stop_words_es = ("un","una","unas","unos","uno","sobre","todo","tambien","tras","otro","algun","alguno","alguna","algunos","algunas","ser","es","soy","eres","somos","sois","estoy","esta","estamos","estais","estan",
+"como","en","para","atras","porque","por que","estado","estaba","ante","antes","siendo","ambos","pero","por","poder","puede","puedo","podemos","podeis","pueden","fui","fue","fuimos","fueron","hacer","hago","hace",
 "hacemos","haceis","hacen","cada","fin","incluso","primero desde","conseguir","consigo","consigue","consigues","conseguimos","consiguen","ir","voy","va","vamos","vais","van","vaya","gueno","ha","tener","tengo","tiene",
 "tenemos","teneis","tienen","el","la","lo","las","los","su","aqui","mio","tuyo","ellos","ellas","nos","nosotros","vosotros","vosotras","si","dentro","solo","solamente","saber","sabes","sabe","sabemos","sabeis","saben",
 "ultimo","largo","bastante","haces","muchos","aquellos","aquellas","sus","entonces","tiempo","verdad","verdadero","verdadera cierto","ciertos","cierta","ciertas","intentar","intento","intenta","intentas","intentamos",
@@ -44,13 +44,9 @@ stop_words_es = ("un","una","unas","unos","uno","sobre","todo","también","tras"
 "bien","cual","cuando","donde","mientras","quien","con","entre","sin","trabajo","trabajar","trabajas","trabaja","trabajamos","trabajais","trabajan","podria","podrias","podriamos","podrian","podriais","yo","aquel")
 
 mongo_client = MongoClient('10.131.137.188', 27017)
-
 data_base = mongo_client.grupo_14
 data_base.authenticate('user1', 'eafit.2017')
 collection = data_base.word
-repetitions_map = {}
-
-
 
 def clean_word(word):
   word = word.decode('utf-8','ignore')
@@ -67,27 +63,11 @@ class InvertedIndex(MRJob):
 
         for word in line.split():
             if (word not in stop_words_es)  or (word not in stop_words_en):
-                if (file_name, word) not in repetitions_map:
-                    repetitions_map[(file_name, word)] = 1
-                else:
-                    repetitions_map[(file_name, word)] +=1
-                yield (word, file_name)
+                yield (file_name, word), 1
 
     def reducer(self, word, files):
-        matching_files = list(files)
-
-        fileTimes = []
-        for i in range(len(matching_files)):
-            fileTimes.append((matching_files[i], repetitions_map[(matching_files[i], word)]))
-
-        new_list = list(set(fileTimes))
-        record = {"term" : word,"documents" : []}
-        for x in new_list:
-            record["documents"].append({"name" : x[0], "times": x[1]})
-
-        result = collection.insert_one(record);
-        yield word, new_list
+        collection.insert_one({'file': word[0], 'word': word[1], 'num': sum(files)})
+        yield word, sum(files)
 
 if __name__ == '__main__':
     InvertedIndex.run()
-                                                                                                                                                                                                  91,6          Bot
