@@ -1,6 +1,7 @@
 class Word
   include Mongoid::Document
   store_in collection: "word"
-  field :term, type: String
-  field :documents, type: Array, default: []
+  field :word, type: String
+  field :file, type: String
+  field :num, type: Integer
 end

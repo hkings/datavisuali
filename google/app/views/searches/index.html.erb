@@ -1,12 +1,13 @@
 <h1>Google</h1>
 <br>
-<%= form_tag(root_path, method: 'get') do %>
+<%= form_tag(root_path, method: 'post') do %>
   <%= text_field_tag(:term) %>
   <%= submit_tag("search") %>
 <% end %>
 
 <ul>
   <% @docs.each do |doc| %>
-    <li><%= doc.term %> <%= doc.documents.name %> <%= doc.documents.times %></li>
+    <li><%= doc.word %> || <%= doc.file %> || <%= doc.num %></li>
   <% end %>
 </ul>
+
